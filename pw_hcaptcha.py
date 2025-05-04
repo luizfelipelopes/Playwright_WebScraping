@@ -1,0 +1,71 @@
+import asyncio
+import json
+import time
+
+from playwright.async_api import async_playwright, Page
+
+from hcaptcha_challenger.agent import AgentV, AgentConfig
+from hcaptcha_challenger.models import CaptchaResponse
+from hcaptcha_challenger.utils import SiteKey
+
+
+async def challenge(page: Page) -> AgentV:
+    """Automates the process of solving an hCaptcha challenge."""
+    # Initialize the agent configuration with API key (from parameters or environment)
+    agent_config = AgentConfig()
+
+    # Create an agent instance with the page and configuration
+    # AgentV appears to be a specialized agent for visual challenges
+    agent = AgentV(page=page, agent_config=agent_config)
+
+    # Click the hCaptcha checkbox to initiate the challenge
+    # The robotic_arm is an abstraction for performing UI interactions
+    await agent.robotic_arm.click_checkbox()
+
+    # Wait for the challenge to appear and be ready for solving
+    # This may involve waiting for images to load or instructions to appear
+    await agent.wait_for_challenge()
+
+    # Note: The code ends here, suggesting this is part of a larger solution
+    # that would continue with challenge solving steps after this point
+    return agent
+
+
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)
+        context = await browser.new_context()
+
+        # Create a new page in the provided browser context
+        page = await context.new_page()
+
+        # Navigate to the hCaptcha test page using a predefined site key
+        await page.goto('https://filia2-consulta.tse.jus.br/#/principal/certidao-gerar')
+
+        # --- When you encounter hCaptcha in your workflow ---
+        agent = await challenge(page)
+        if agent.cr_list:
+            cr: CaptchaResponse = agent.cr_list[-1]
+            print(json.dumps(cr.model_dump(by_alias=True), indent=2, ensure_ascii=False))
+            await page.fill('//*[@id="mat-input-0"]', '165014040213')
+            await page.fill('//*[@id="mat-input-1"]', 'Luiz Felipe Cordiro Lopes')
+            await page.fill('//*[@id="mat-input-3"]', 'Maria Fernanda Cordeiro Lopes')
+            await page.fill('//*[@id="mat-input-4"]', 'João Izabel Lopes')
+
+            await page.fill('//*[@id="mat-input-2"]', '08/01/1990')
+            await page.click('//*[@id="mat-datepicker-0"]/div/mat-month-view/table/tbody/tr[1]/td[4]/button')
+            await page.eval_on_selector('//*[@id="mat-input-2"]', f"""
+                                    el => {{
+                                        el.value = '08/01/1990';
+                                        el.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                                    }}""")
+            await page.click('//html/body/app-root/div/app-principal/mat-sidenav-container/mat-sidenav-content/app-gerar-certidao/section/div/article/form')
+            await page.click('//html/body/app-root/div/app-principal/mat-sidenav-container/mat-sidenav-content/app-gerar-certidao/section/div/article/form/mat-card/mat-card-content/div[6]/button[3]')
+
+
+            time.sleep(10)
+    
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
