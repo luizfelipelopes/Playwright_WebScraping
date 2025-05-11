@@ -9,6 +9,7 @@ from hcaptcha_challenger.models import CaptchaResponse
 # https://pypi.org/project/hcaptcha-challenger/
 # https://github.com/QIN2DIM/hcaptcha-challenger
 # https://github.com/QIN2DIM/hcaptcha-challenger/blob/main/docs/README.md
+# https://console.cloud.google.com/apis/credentials?hl=pt-br&inv=1&invt=AbxE0g&project=gen-lang-client-0876519403
 
 async def challenge(page: Page) -> AgentV:
     """Automates the process of solving an hCaptcha challenge."""
