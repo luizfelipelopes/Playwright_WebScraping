@@ -43,6 +43,8 @@ async def main():
         # Navigate to the hCaptcha test page using a predefined site key
         await page.goto('https://filia2-consulta.tse.jus.br/#/principal/certidao-gerar')
 
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+
         # --- When you encounter hCaptcha in your workflow ---
         agent = await challenge(page)
         if agent.cr_list:
@@ -64,7 +66,7 @@ async def main():
             await page.click('//html/body/app-root/div/app-principal/mat-sidenav-container/mat-sidenav-content/app-gerar-certidao/section/div/article/form/mat-card/mat-card-content/div[6]/button[3]')
 
 
-            time.sleep(10)
+            time.sleep(20)
     
 
 

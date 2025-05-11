@@ -37,6 +37,8 @@ async def main():
         # Navigate to the hCaptcha test page using a predefined site key
         await page.goto('https://www2.trf4.jus.br/trf4/processos/certidao/index.php')
 
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+
         await page.fill('//*[@id="string_cpf"]', '10043770614')
 
         responses = await solve_captcha()
