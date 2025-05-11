@@ -3,11 +3,12 @@ import json
 import time
 
 from playwright.async_api import async_playwright, Page
-
 from hcaptcha_challenger.agent import AgentV, AgentConfig
 from hcaptcha_challenger.models import CaptchaResponse
-from hcaptcha_challenger.utils import SiteKey
 
+# https://pypi.org/project/hcaptcha-challenger/
+# https://github.com/QIN2DIM/hcaptcha-challenger
+# https://github.com/QIN2DIM/hcaptcha-challenger/blob/main/docs/README.md
 
 async def challenge(page: Page) -> AgentV:
     """Automates the process of solving an hCaptcha challenge."""
